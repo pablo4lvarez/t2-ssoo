@@ -52,3 +52,6 @@ Mkfile.old
 dkms.conf
 
 **/.DS_Store
+
+mem_filled.bin
+mem_format.bin
