@@ -10,3 +10,4 @@ typedef struct {
     uint32_t virtual_address; // Dirección virtual del archivo
 } osrmsFile;
 
+osrmsFile* os_open(int process_id, char* file_name, char mode);
