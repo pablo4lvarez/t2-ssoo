@@ -9,3 +9,4 @@ typedef struct {
     char mode;               // Modo de acceso ('r' o 'w')
     uint32_t virtual_address; // Dirección virtual del archivo
 } osrmsFile;
+
