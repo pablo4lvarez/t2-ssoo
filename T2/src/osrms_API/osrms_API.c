@@ -26,7 +26,7 @@ void os_mount(char* memory_path) {
 #define PCB_TABLE_SIZE 32     // La tabla de PCBs tiene 32 entradas
 #define PCB_ENTRY_SIZE 256    // Cada entrada en la tabla de PCBs ocupa 256 bytes
 #define PCB_TABLE_OFFSET 0    // La tabla de PCBs empieza en el offset 0 de la memoria
-#define FILE_TABLE_OFFSET 16     // Offset dentro del PCB para acceder a la Tabla de Archivos
+#define FILE_TABLE_OFFSET 13    // Offset dentro del PCB para acceder a la Tabla de Archivos
 #define FILE_ENTRY_SIZE 23        // Tamaño de cada entrada en la Tabla de Archivos
 #define MAX_FILES_PER_PROCESS 5   // Máximo número de archivos por proceso
 
@@ -44,7 +44,6 @@ void os_ls_processes() {
     for (int i = 0; i < PCB_TABLE_SIZE; i++) {
         uint8_t state;         // 1 byte para el estado
         uint8_t process_id;    // 1 byte para el ID del proceso
-        printf("Leyendo entrada numero %d\n", i);
         char process_name[12]; // 11 bytes para el nombre, más 1 byte para el '\0'
 
         // Leer el estado del proceso (1 byte)
@@ -138,15 +137,15 @@ void os_ls_files(int process_id) {
         fread(&state, 1, 1, memory_file);
         fread(&pid, 1, 1, memory_file);
 
-        // Saltar hasta la Tabla de Archivos dentro del PCB
-        fseek(memory_file, FILE_TABLE_OFFSET - 2, SEEK_CUR); // Ajustar el salto correcto
-
         // Depuración
         printf("Leyendo entrada número %d, PID: %d, Estado: %d\n", i, pid, state);
 
         // Si el proceso está en ejecución y su ID coincide con process_id
         if (pid == process_id && state == 0x01) {
             printf("Archivos del proceso ID %d:\n", process_id);
+
+            // Posicionar el puntero al inicio de la Tabla de Archivos dentro del PCB
+            fseek(memory_file, FILE_TABLE_OFFSET - 2, SEEK_CUR);
 
             // Recorrer la Tabla de Archivos
             for (int j = 0; j < MAX_FILES_PER_PROCESS; j++) {
@@ -177,7 +176,7 @@ void os_ls_files(int process_id) {
         }
 
         // Saltar al siguiente PCB si este no es el proceso que buscamos
-        fseek(memory_file, PCB_ENTRY_SIZE - FILE_TABLE_OFFSET - (MAX_FILES_PER_PROCESS * FILE_ENTRY_SIZE), SEEK_CUR);
+        fseek(memory_file, PCB_ENTRY_SIZE - 2, SEEK_CUR); // Saltar al siguiente PCB
     }
 
     // Si el proceso no está en ejecución o no se encuentra
