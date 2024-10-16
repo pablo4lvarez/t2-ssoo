@@ -226,3 +226,10 @@ int os_write_file(osrmsFile* file_desc, char* src) {
 
     return bytes_written;  // Retornar el total de bytes escritos
 }
+
+
+void os_close(osrmsFile* file_desc) {
+    if (file_desc) {
+        free(file_desc);  // Liberar la memoria del descriptor
+    }
+}
