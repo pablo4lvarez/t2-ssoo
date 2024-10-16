@@ -431,3 +431,13 @@ void os_finish_process(int process_id) {
 
 
 
+void os_unmount() {
+    if (memory_file != NULL) {
+        fclose(memory_file);
+        memory_file = NULL;
+        printf("Memoria desmontada correctamente.\n");
+    }
+}
+
+
+
