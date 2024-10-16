@@ -12,8 +12,8 @@
 #define PCB_ENTRY_SIZE 256        // Tamaño de cada entrada en la tabla de PCBs
 #define PCB_TABLE_SIZE 32         // Número máximo de procesos
 
-#define FRAME_SIZE 256        // Tamaño de cada frame (por ejemplo, 256 bytes)
-#define NUM_FRAMES 1024       // Número de frames en la memoria
+#define FRAME_SIZE 32000       // Tamaño de cada frame (por ejemplo, 256 bytes)
+#define NUM_FRAMES 65536       // Número de frames en la memoria
 
 // Definir la variable global para el archivo de memoria
 extern FILE* memory_file;
@@ -188,41 +188,41 @@ int os_write_file(osrmsFile* file_desc, char* src) {
     uint8_t buffer[FRAME_SIZE];  // Búfer temporal para lectura
 
     while (bytes_written < src_size) {
-        // Leer contenido del archivo de origen al buffer
-        size_t bytes_to_read = FRAME_SIZE - offset_in_frame;
-        if (bytes_to_read > src_size - bytes_written) {
-            bytes_to_read = src_size - bytes_written;
+        // Determinar cuántos bytes quedan en el frame actual
+        uint32_t available_space_in_frame = FRAME_SIZE - offset_in_frame;
+        uint32_t bytes_to_write = available_space_in_frame;
+
+        // Ajustar si el archivo es más pequeño que el espacio disponible
+        if (src_size - bytes_written < available_space_in_frame) {
+            bytes_to_write = src_size - bytes_written;
         }
 
-        // Leer desde el archivo de origen
-        fread(buffer + offset_in_frame, 1, bytes_to_read, input_file);
+        // Leer datos del archivo de entrada al buffer
+        fread(buffer + offset_in_frame, 1, bytes_to_write, input_file);
 
-        // Posicionar el puntero de memoria al inicio del frame actual
+        // Posicionar el puntero al inicio del frame actual
         fseek(memory_file, current_frame * FRAME_SIZE, SEEK_SET);
-        fwrite(buffer, 1, FRAME_SIZE, memory_file);
+        fwrite(buffer, 1, offset_in_frame + bytes_to_write, memory_file);
 
-        // Actualizar contador de bytes y avanzar al siguiente frame si es necesario
-        bytes_written += bytes_to_read;
+        bytes_written += bytes_to_write;
+        offset_in_frame = 0;  // Reiniciar el offset para el siguiente frame
+
+        // Si terminamos de escribir en un frame, pasar al siguiente
         current_frame++;
 
-        // Reiniciar offset_in_frame para el siguiente frame
-        offset_in_frame = 0;  // Comenzar desde el inicio en los siguientes frames
-
-        // Si ya no hay más frames disponibles, detener la escritura
-        if (current_frame >= NUM_FRAMES) {
+        // Verificar si hemos agotado los frames disponibles
+        if (current_frame >= NUM_FRAMES && bytes_written < src_size) {
             printf("Error: No hay más frames disponibles en la memoria.\n");
-            break;
+            fclose(input_file);
+            return -1;
         }
     }
 
-    // Cerrar el archivo de origen
+    // Cerrar el archivo de entrada
     fclose(input_file);
 
     // Actualizar los atributos del descriptor del archivo
     file_desc->file_size = bytes_written;
-    file_desc->virtual_address = file_desc->virtual_address;  // Se mantiene la misma dirección
 
-    // Retornar la cantidad de bytes escritos
-    return bytes_written;
+    return bytes_written;  // Retornar el total de bytes escritos
 }
-
