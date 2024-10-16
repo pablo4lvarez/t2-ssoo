@@ -270,3 +270,59 @@ void os_tp_bitmap() {
     printf("Total de tablas de páginas ocupadas: %d\n", occupied_count);
     printf("Total de tablas de páginas libres: %d\n", free_count);
 }
+
+
+
+
+
+
+
+#define MAX_PROCESS_NAME_LENGTH 11 // Tamaño máximo del nombre del proceso
+
+void os_start_process(int process_id, char* process_name) {
+    // Posicionar el puntero en la Tabla de PCBs al inicio de la memoria
+    fseek(memory_file, PCB_TABLE_OFFSET, SEEK_SET);
+
+    // Iterar sobre todas las entradas de la tabla de PCBs para encontrar un espacio libre
+    for (int i = 0; i < PCB_TABLE_SIZE; i++) {
+        uint8_t state;
+
+        // Leer el byte de estado para ver si está en ejecución (1) o libre (0)
+        fread(&state, 1, 1, memory_file);
+
+        if (state == 0x00) {  // Si el proceso está libre (estado == 0x00)
+            // Retroceder al inicio de la entrada del PCB
+            fseek(memory_file, -1, SEEK_CUR);
+
+            // Marcar el proceso como en ejecución (estado = 0x01)
+            state = 0x01;
+            fwrite(&state, 1, 1, memory_file);
+
+            // Escribir el ID del proceso
+            fwrite(&process_id, 1, 1, memory_file);
+
+            // Escribir el nombre del proceso (asegurar que tiene 11 bytes)
+            char process_name_buffer[MAX_PROCESS_NAME_LENGTH + 1] = {0};  // Buffer para el nombre del proceso
+            strncpy(process_name_buffer, process_name, MAX_PROCESS_NAME_LENGTH);  // Copiar el nombre
+            fwrite(process_name_buffer, 1, MAX_PROCESS_NAME_LENGTH, memory_file);
+
+            // Inicializar la Tabla de Archivos con ceros (115 bytes)
+            uint8_t empty_table[115] = {0};
+            fwrite(empty_table, 1, 115, memory_file);
+
+            // Inicializar la Tabla de Páginas de Primer Orden con ceros (128 bytes)
+            uint8_t empty_page_table[128] = {0};
+            fwrite(empty_page_table, 1, 128, memory_file);
+
+            printf("Proceso %s (ID %d) iniciado correctamente.\n", process_name, process_id);
+            return;  // Salir después de escribir el proceso
+        }
+
+        // Saltar al siguiente PCB (resto de la entrada de 255 bytes)
+        fseek(memory_file, PCB_ENTRY_SIZE - 1, SEEK_CUR);
+    }
+
+    printf("Error: No hay espacio disponible en la tabla de PCBs.\n");
+}
+
+
