@@ -24,20 +24,30 @@ int main(int argc, char const *argv[])
 
     // os_tp_bitmap();
 
-    osrmsFile* pointer = os_open(228, "caramel.wav", 'r');
-    if (pointer == NULL) {
-        printf("No se pudo abrir el archivo\n");
-    } else {
-        printf("Archivo abierto correctamente\n");
-        printf("ID del proceso: %d\n", pointer->process_id);
-        printf("Nombre del archivo: %s\n", pointer->file_name);
-        printf("Tamaño del archivo: %u bytes\n", pointer->file_size);
-        printf("Modo de acceso: %c\n", pointer->mode);
-        printf("Dirección virtual: %u\n", pointer->virtual_address);
-    }
+    // osrmsFile* pointer = os_open(228, "caramel.wav", 'r');
+    // if (pointer == NULL) {
+    //     printf("No se pudo abrir el archivo\n");
+    // } else {
+    //     printf("Archivo abierto correctamente\n");
+    //     printf("ID del proceso: %d\n", pointer->process_id);
+    //     printf("Nombre del archivo: %s\n", pointer->file_name);
+    //     printf("Tamaño del archivo: %u bytes\n", pointer->file_size);
+    //     printf("Modo de acceso: %c\n", pointer->mode);
+    //     printf("Dirección virtual: %u\n", pointer->virtual_address);
+    // }
 
-    int size = os_read_file(pointer, "out.bin");
-    printf("tamaño %i\n", size);
+    // int size = os_read_file(pointer, "out.bin");
+    // printf("tamaño %i\n", size);
+
+
+    // os_start_process(244, "goat fooour");
+    // os_start_process(200, "sheep again");
+
+    // os_ls_processes();
+
+    // os_finish_process(200);
+
+    // os_ls_processes();
 
     return 0;
 
