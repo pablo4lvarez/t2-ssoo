@@ -34,10 +34,9 @@ int main(int argc, char const *argv[])
         printf("Tamaño del archivo: %u bytes\n", pointer->file_size);
         printf("Modo de acceso: %c\n", pointer->mode);
         printf("Dirección virtual: %u\n", pointer->virtual_address);
-
     }
 
-    int size = os_read_file(pointer, "out.txt");
+    int size = os_read_file(pointer, "out.bin");
     printf("tamaño %i\n", size);
 
     return 0;
