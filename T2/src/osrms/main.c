@@ -51,18 +51,5 @@ int main(int argc, char const *argv[])
     // printf("tamaño %i\n", size);
 
 
-    osrmsFile* file = os_open(228, "caramel.wav", 'r');
-    int size = os_read_file(file, "out.bin");
-    printf("Size: %i\n", size);
-    if (file) {
-        int bytes = os_write_file(file, "out.bin");
-        printf("Bytes escritos: %d\n", bytes);
-    } else {
-    printf("Error al abrir el archivo para escritura.\n");
-    }
-
     return 0;
-
 }
-
-
