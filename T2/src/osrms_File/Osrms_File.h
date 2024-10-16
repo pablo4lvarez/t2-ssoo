@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-
+#include <stdio.h> 
 typedef struct {
     int process_id;          // ID del proceso al que pertenece el archivo
     char file_name[15];      // Nombre del archivo
@@ -10,4 +10,7 @@ typedef struct {
     uint32_t virtual_address; // Dirección virtual del archivo
 } osrmsFile;
 
+extern FILE* memory_file;
+
 osrmsFile* os_open(int process_id, char* file_name, char mode);
+int os_read_file(osrmsFile* file_desc, char* dest);

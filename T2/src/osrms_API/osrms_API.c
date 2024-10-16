@@ -7,9 +7,7 @@
 
 
 
-
-// Definición de una variable global para almacenar la ruta de la memoria
-static FILE* memory_file = NULL;
+FILE* memory_file = NULL;  // Inicialización de la variable global
 
 void os_mount(char* memory_path) {
     // Abrir el archivo de memoria
