@@ -39,9 +39,15 @@ int main(int argc, char const *argv[])
     // int size = os_read_file(pointer, "out.bin");
     // printf("tamaño %i\n", size);
 
-    os_start_process(11, "entonces");
 
-    os_ls_processes();
+    // os_start_process(244, "goat fooour");
+    // os_start_process(200, "sheep again");
+
+    // os_ls_processes();
+
+    // os_finish_process(200);
+
+    // os_ls_processes();
 
     return 0;
 
